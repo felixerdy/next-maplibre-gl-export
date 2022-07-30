@@ -27,24 +27,23 @@
  * THE SOFTWARE.
  */
 
-import { jsPDF } from 'jspdf';
-import { saveAs } from 'file-saver';
-import { Map as MaplibreMap } from 'maplibre-gl';
-import 'js-loading-overlay';
-import { fabric } from 'fabric';
+import { jsPDF } from "jspdf";
+import { saveAs } from "file-saver";
+import { Map as MaplibreMap } from "maplibre-gl";
+import { fabric } from "fabric";
 
 export const Format = {
-  JPEG: 'jpg',
-  PNG: 'png',
-  PDF: 'pdf',
-  SVG: 'svg',
+  JPEG: "jpg",
+  PNG: "png",
+  PDF: "pdf",
+  SVG: "svg",
 } as const;
 type Format = typeof Format[keyof typeof Format];
 
 export const Unit = {
   // don't use inch unit. because page size setting is using mm unit.
-  in: 'in',
-  mm: 'mm',
+  in: "in",
+  mm: "mm",
 } as const;
 type Unit = typeof Unit[keyof typeof Unit];
 
@@ -64,13 +63,12 @@ export const Size = {
   B4: [353, 250],
   B5: [250, 176],
   B6: [176, 125],
-
 } as const;
 type Size = typeof Size[keyof typeof Size];
 
 export const PageOrientation = {
-  Landscape: 'landscape',
-  Portrait: 'portrait',
+  Landscape: "landscape",
+  Portrait: "portrait",
 } as const;
 type PageOrientation = typeof PageOrientation[keyof typeof PageOrientation];
 
@@ -84,7 +82,6 @@ export const DPI = {
 type DPI = typeof DPI[keyof typeof DPI];
 
 export default class MapGenerator {
-
   private width: number;
 
   private height: number;
@@ -98,12 +95,12 @@ export default class MapGenerator {
    * @param unit length unit. default is mm
    */
   constructor(
-    private map:MaplibreMap,
+    private map: MaplibreMap,
     size: Size = Size.A4,
     private dpi: number = 300,
-    private format:string = Format.PNG.toString(),
+    private format: string = Format.PNG.toString(),
     private unit: Unit = Unit.mm,
-    private fileName: string = 'map'
+    private fileName: string = "map"
   ) {
     this.width = size[0];
     this.height = size[1];
@@ -115,35 +112,24 @@ export default class MapGenerator {
   generate() {
     const this_ = this;
 
-    // see documentation for JS Loading Overray library
-    // https://js-loading-overlay.muhdfaiz.com
-    // @ts-ignore
-    JsLoadingOverlay.show({
-      overlayBackgroundColor: '#5D5959',
-      overlayOpacity: '0.6',
-      spinnerIcon: 'ball-spin',
-      spinnerColor: '#2400FD',
-      spinnerSize: '2x',
-      overlayIDName: 'overlay',
-      spinnerIDName: 'spinner',
-      offsetX: 0,
-      offsetY: 0,
-      containerID: null,
-      lockScroll: false,
-      overlayZIndex: 9998,
-      spinnerZIndex: 9999,
-    });
+    // is loading
 
     // Calculate pixel ratio
-    const actualPixelRatio: number = window.devicePixelRatio;
-    Object.defineProperty(window, 'devicePixelRatio', {
-      get() { return this_.dpi / 96; },
-    });
+    let actualPixelRatio: number;
+    // make sure your function is being called in client side only
+    if (typeof window !== "undefined") {
+      actualPixelRatio = window.devicePixelRatio;
+      Object.defineProperty(window, "devicePixelRatio", {
+        get() {
+          return this_.dpi / 96;
+        },
+      });
+    }
     // Create map container
-    const hidden = document.createElement('div');
-    hidden.className = 'hidden-map';
+    const hidden = document.createElement("div");
+    hidden.className = "hidden-map";
     document.body.appendChild(hidden);
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.style.width = this.toPixels(this.width);
     container.style.height = this.toPixels(this.height);
     hidden.appendChild(container);
@@ -177,12 +163,12 @@ export default class MapGenerator {
       transformRequest: (this.map as any)._requestManager._transformRequestFn,
     });
 
-    const images = (this.map.style.imageManager||{}).images||[];
+    const images = (this.map.style.imageManager || {}).images || [];
     for (const key in images) {
-        renderMap.addImage(key, images[key].data);
+      renderMap.addImage(key, images[key].data);
     }
 
-    renderMap.once('idle', () => {
+    renderMap.once("idle", () => {
       const canvas = renderMap.getCanvas();
       const fileName = `${this.fileName}.${this_.format}`;
       switch (this_.format) {
@@ -205,12 +191,15 @@ export default class MapGenerator {
 
       renderMap.remove();
       hidden.parentNode?.removeChild(hidden);
-      Object.defineProperty(window, 'devicePixelRatio', {
-        get() { return actualPixelRatio; },
-      });
+      if (typeof window !== "undefined") {
+        Object.defineProperty(window, "devicePixelRatio", {
+          get() {
+            return actualPixelRatio;
+          },
+        });
+      }
 
-      // @ts-ignore
-      JsLoadingOverlay.hide();
+      // is loading false
     });
   }
 
@@ -232,15 +221,15 @@ export default class MapGenerator {
    * @param fileName file name
    */
   private toJPEG(canvas: HTMLCanvasElement, fileName: string) {
-    const uri = canvas.toDataURL('image/jpeg', 0.85);
+    const uri = canvas.toDataURL("image/jpeg", 0.85);
     // @ts-ignore
-    if (canvas.msToBlob) {
+    if (canvas.msToBlob && typeof window !== "undefined") {
       // for IE11
       const blob = this.toBlob(uri);
       (window.navigator as any).msSaveBlob(blob, fileName);
     } else {
       // for other browsers except IE11
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = uri;
       a.download = fileName;
       a.click();
@@ -256,19 +245,28 @@ export default class MapGenerator {
   private toPDF(map: MaplibreMap, fileName: string) {
     const canvas = map.getCanvas();
     const pdf = new jsPDF({
-      orientation: this.width > this.height ? 'l' : 'p',
+      orientation: this.width > this.height ? "l" : "p",
       unit: this.unit,
       compress: true,
     });
 
-    pdf.addImage(canvas.toDataURL('image/png'), 'png', 0, 0, this.width, this.height, undefined, 'FAST');
+    pdf.addImage(
+      canvas.toDataURL("image/png"),
+      "png",
+      0,
+      0,
+      this.width,
+      this.height,
+      undefined,
+      "FAST"
+    );
 
     const { lng, lat } = map.getCenter();
     pdf.setProperties({
       title: map.getStyle().name,
       subject: `center: [${lng}, ${lat}], zoom: ${map.getZoom()}`,
-      creator: 'Mapbox GL Export Plugin',
-      author: '(c)Mapbox, (c)OpenStreetMap',
+      creator: "Mapbox GL Export Plugin",
+      author: "(c)Mapbox, (c)OpenStreetMap",
     });
 
     pdf.save(fileName);
@@ -283,11 +281,15 @@ export default class MapGenerator {
    * @param fileName file name
    */
   private toSVG(canvas: HTMLCanvasElement, fileName: string) {
-    const uri = canvas.toDataURL('image/png');
+    const uri = canvas.toDataURL("image/png");
     fabric.Image.fromURL(uri, (image) => {
-      const tmpCanvas = new fabric.Canvas('canvas');
-      const pxWidth = Number(this.toPixels(this.width, this.dpi).replace('px', ''));
-      const pxHeight = Number(this.toPixels(this.height, this.dpi).replace('px', ''));
+      const tmpCanvas = new fabric.Canvas("canvas");
+      const pxWidth = Number(
+        this.toPixels(this.width, this.dpi).replace("px", "")
+      );
+      const pxHeight = Number(
+        this.toPixels(this.height, this.dpi).replace("px", "")
+      );
       image.scaleToWidth(pxWidth);
       image.scaleToHeight(pxHeight);
 
@@ -305,7 +307,7 @@ export default class MapGenerator {
           height: pxHeight,
         },
       });
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = `data:application/xml,${encodeURIComponent(svg)}`;
       a.download = fileName;
       a.click();
@@ -318,7 +320,7 @@ export default class MapGenerator {
    * @param length mm/inch length
    * @param conversionFactor DPI value. default is 96.
    */
-  private toPixels(length:number, conversionFactor = 96) {
+  private toPixels(length: number, conversionFactor = 96) {
     if (this.unit === Unit.mm) {
       conversionFactor /= 25.4;
     }
@@ -330,12 +332,12 @@ export default class MapGenerator {
    * @param base64 string value for base64
    */
   private toBlob(base64: string): Blob {
-    const bin = atob(base64.replace(/^.*,/, ''));
+    const bin = atob(base64.replace(/^.*,/, ""));
     const buffer = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i += 1) {
       buffer[i] = bin.charCodeAt(i);
     }
-    const blob = new Blob([buffer.buffer], { type: 'image/png' });
+    const blob = new Blob([buffer.buffer], { type: "image/png" });
     return blob;
   }
 }
