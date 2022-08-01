@@ -18,7 +18,7 @@ import MapGenerator, {
   Unit,
 } from "./map-generator";
 
-type Options = {
+export type ExportOptions = {
   PageSize?: any;
   PageOrientation?: string;
   Format?: string;
@@ -59,7 +59,7 @@ export default class MaplibreExportControl implements IControl {
 
   private exportButton: HTMLButtonElement;
 
-  private options: Options = {
+  private options: ExportOptions = {
     PageSize: Size.A4,
     PageOrientation: PageOrientation.Landscape,
     Format: Format.PDF,
@@ -83,7 +83,7 @@ export default class MaplibreExportControl implements IControl {
     DefaultTitle: "",
   };
 
-  constructor(options: Options) {
+  constructor(options: ExportOptions) {
     if (options) {
       this.options = Object.assign(this.options, options);
     }

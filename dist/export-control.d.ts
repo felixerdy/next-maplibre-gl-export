@@ -1,6 +1,6 @@
 import { ControlPosition, IControl, Map as MaplibreMap } from "maplibre-gl";
 import { Translation } from "./local";
-declare type Options = {
+export declare type ExportOptions = {
     PageSize?: any;
     PageOrientation?: string;
     Format?: string;
@@ -20,7 +20,7 @@ export default class MaplibreExportControl implements IControl {
     private map?;
     private exportButton;
     private options;
-    constructor(options: Options);
+    constructor(options: ExportOptions);
     getDefaultPosition(): ControlPosition;
     getTranslation(): Translation;
     onAdd(map: MaplibreMap): HTMLElement;
@@ -32,4 +32,3 @@ export default class MaplibreExportControl implements IControl {
     private togglePrintableArea;
     private updatePrintableArea;
 }
-export {};
