@@ -39,12 +39,13 @@ exports.DPI = {
     400: 400,
 };
 class MapGenerator {
-    constructor(map, size = exports.Size.A4, dpi = 300, format = exports.Format.PNG.toString(), unit = exports.Unit.mm, fileName = "map") {
+    constructor(map, size = exports.Size.A4, dpi = 300, format = exports.Format.PNG.toString(), unit = exports.Unit.mm, fileName = "map", title = "") {
         this.map = map;
         this.dpi = dpi;
         this.format = format;
         this.unit = unit;
         this.fileName = fileName;
+        this.title = title;
         this.width = size[0];
         this.height = size[1];
     }
@@ -153,6 +154,11 @@ class MapGenerator {
             compress: true,
         });
         pdf.addImage(canvas.toDataURL("image/png"), "png", 0, 0, this.width, this.height, undefined, "FAST");
+        if (this.title && this.title !== "") {
+            pdf.setFillColor("white");
+            pdf.rect(0, 0, this.width, 15, "F");
+            pdf.text(this.title, 10, 10);
+        }
         const { lng, lat } = map.getCenter();
         pdf.setProperties({
             title: map.getStyle().name,

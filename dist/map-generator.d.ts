@@ -40,9 +40,10 @@ export default class MapGenerator {
     private format;
     private unit;
     private fileName;
+    private title;
     private width;
     private height;
-    constructor(map: MaplibreMap, size?: Size, dpi?: number, format?: string, unit?: Unit, fileName?: string);
+    constructor(map: MaplibreMap, size?: Size, dpi?: number, format?: string, unit?: Unit, fileName?: string, title?: string);
     generate(): void;
     private toPNG;
     private toJPEG;

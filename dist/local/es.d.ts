@@ -4,5 +4,6 @@ declare const translation: {
     Format: string;
     DPI: string;
     Generate: string;
+    Title: string;
 };
 export default translation;

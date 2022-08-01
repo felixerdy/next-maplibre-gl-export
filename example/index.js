@@ -20,13 +20,14 @@ import "../css/styles.css";
   map.addControl(new NavigationControl(), "top-right");
   map.addControl(
     new MaplibreExportControl({
-      PageSize: Size.A3,
-      PageOrientation: PageOrientation.Portrait,
-      Format: Format.PNG,
-      DPI: DPI[96],
+      PageSize: Size.A4,
+      PageOrientation: PageOrientation.Landscape,
+      Format: Format.PDF,
+      DPI: DPI[300],
       Crosshair: true,
       PrintableArea: true,
       Local: "de",
+      DefaultTitle: "This is a default title",
     }),
     "top-right"
   );

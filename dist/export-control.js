@@ -38,6 +38,7 @@ class MaplibreExportControl {
             Local: "en",
             AllowedSizes: Object.keys(map_generator_1.Size),
             Filename: "map",
+            DefaultTitle: "",
         };
         if (options) {
             this.options = Object.assign(this.options, options);
@@ -105,6 +106,7 @@ class MaplibreExportControl {
         const tr4 = this.createSelection(map_generator_1.DPI, this.getTranslation().DPI, "dpi-type", this.options.DPI, (data, key) => data[key]);
         table.appendChild(tr4);
         this.exportContainer.appendChild(table);
+        table.appendChild(this.createTextInput(this.getTranslation().Title, "titleInput", this.options.DefaultTitle || ""));
         const generateButton = document.createElement("button");
         generateButton.type = "button";
         generateButton.textContent = this.getTranslation().Generate;
@@ -119,11 +121,31 @@ class MaplibreExportControl {
             if (orientValue === map_generator_1.PageOrientation.Portrait) {
                 pageSizeValue = pageSizeValue.reverse();
             }
-            const mapGenerator = new map_generator_1.default(map, pageSizeValue, Number(dpiType.value), formatType.value, map_generator_1.Unit.mm, this.options.Filename);
+            const mapGenerator = new map_generator_1.default(map, pageSizeValue, Number(dpiType.value), formatType.value, map_generator_1.Unit.mm, this.options.Filename, document.getElementById("titleInput").value);
             mapGenerator.generate();
         });
         this.exportContainer.appendChild(generateButton);
         return this.controlContainer;
+    }
+    createTextInput(title, id, defaultValue) {
+        const label = document.createElement("label");
+        label.textContent = title;
+        const inputElement = document.createElement("input");
+        inputElement.type = "text";
+        inputElement.id = id;
+        inputElement.style.width = "100%";
+        if (defaultValue) {
+            inputElement.defaultValue = defaultValue;
+        }
+        const tr1 = document.createElement("TR");
+        const tdLabel = document.createElement("TD");
+        const tdContent = document.createElement("TD");
+        tdContent.style.display = "flex";
+        tdLabel.appendChild(label);
+        tdContent.appendChild(inputElement);
+        tr1.appendChild(tdLabel);
+        tr1.appendChild(tdContent);
+        return tr1;
     }
     createSelection(data, title, type, defaultValue, converter) {
         const label = document.createElement("label");

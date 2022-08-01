@@ -10,5 +10,6 @@ declare type Translation = {
     Format: string;
     DPI: string;
     Generate: string;
+    Title: string;
 };
 export { english, french, finnish, swedish, spanish, german, Translation };

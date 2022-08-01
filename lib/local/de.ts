@@ -4,6 +4,7 @@ const translation = {
   Format: "Format",
   DPI: "DPI",
   Generate: "Generieren",
+  Title: "Titel",
 };
 
 export default translation;
