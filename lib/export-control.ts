@@ -39,6 +39,7 @@ type Options = {
     | "B6"
   )[];
   Filename?: string;
+  DefaultTitle?: string;
 };
 
 /**
@@ -79,6 +80,7 @@ export default class MaplibreExportControl implements IControl {
       | "B6"
     )[],
     Filename: "map",
+    DefaultTitle: "",
   };
 
   constructor(options: Options) {
@@ -181,6 +183,14 @@ export default class MaplibreExportControl implements IControl {
 
     this.exportContainer.appendChild(table);
 
+    table.appendChild(
+      this.createTextInput(
+        this.getTranslation().Title,
+        "titleInput",
+        this.options.DefaultTitle || ""
+      )
+    );
+
     const generateButton = document.createElement("button");
     generateButton.type = "button";
     generateButton.textContent = this.getTranslation().Generate;
@@ -209,13 +219,37 @@ export default class MaplibreExportControl implements IControl {
         Number(dpiType.value),
         formatType.value,
         Unit.mm,
-        this.options.Filename
+        this.options.Filename,
+        (document.getElementById("titleInput") as HTMLInputElement).value
       );
       mapGenerator.generate();
     });
     this.exportContainer.appendChild(generateButton);
 
     return this.controlContainer;
+  }
+
+  private createTextInput(title: string, id: string, defaultValue: string) {
+    const label = document.createElement("label");
+    label.textContent = title;
+
+    const inputElement = document.createElement("input");
+    inputElement.type = "text";
+    inputElement.id = id;
+    inputElement.style.width = "100%";
+    if (defaultValue) {
+      inputElement.defaultValue = defaultValue;
+    }
+
+    const tr1 = document.createElement("TR");
+    const tdLabel = document.createElement("TD");
+    const tdContent = document.createElement("TD");
+    tdContent.style.display = "flex";
+    tdLabel.appendChild(label);
+    tdContent.appendChild(inputElement);
+    tr1.appendChild(tdLabel);
+    tr1.appendChild(tdContent);
+    return tr1;
   }
 
   private createSelection(

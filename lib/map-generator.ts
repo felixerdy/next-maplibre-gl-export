@@ -100,7 +100,8 @@ export default class MapGenerator {
     private dpi: number = 300,
     private format: string = Format.PNG.toString(),
     private unit: Unit = Unit.mm,
-    private fileName: string = "map"
+    private fileName: string = "map",
+    private title: string = ""
   ) {
     this.width = size[0];
     this.height = size[1];
@@ -260,6 +261,12 @@ export default class MapGenerator {
       undefined,
       "FAST"
     );
+
+    if (this.title && this.title !== "") {
+      pdf.setFillColor("white");
+      pdf.rect(0, 0, this.width, 15, "F");
+      pdf.text(this.title, 10, 10);
+    }
 
     const { lng, lat } = map.getCenter();
     pdf.setProperties({

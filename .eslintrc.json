@@ -21,7 +21,10 @@
     "class-methods-use-this": "off",
     "no-console": "off",
     "import/extensions": "off",
-    "quotes": "off"
+    "quotes": "off",
+    "comma-dangle": "off",
+    "guard-for-in": "off",
+    "no-restricted-syntax": "off"
   },
   "settings": {
     "import/resolver": {
